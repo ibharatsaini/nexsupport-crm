@@ -1,0 +1,18 @@
+{
+  "name": "saas-crm",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w packages/client",
+    "dev:server": "npm run dev -w packages/server",
+    "build": "npm run build --workspaces",
+    "lint": "npm run lint --workspaces",
+    "preview": "npm run preview -w packages/client",
+    "start": "npm run start -w packages/server",
+    "prisma:generate": "npm run prisma:generate -w packages/server",
+    "prisma:migrate": "npm run prisma:migrate -w packages/server"
+  }
+}
