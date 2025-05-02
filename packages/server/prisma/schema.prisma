@@ -1,0 +1,214 @@
+// This is your Prisma schema file
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Organization model
+
+enum OrganizationSize {
+  SMALL
+  MEDIUM
+  Large
+  ENTERPRISE
+}
+model Organization {
+   id          String   @id @default(uuid())
+  name         String
+  domain       String?   @unique
+  size         OrganizationSize    @default(SMALL) // Small (1-10), Medium (11-50), Large (51-200), Enterprise (201+)
+  // domain    String   @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  createdBy    String 
+
+
+  // Relations
+  members   OrganizationUser[]
+  tickets Ticket[]
+  invitations Invitation[]
+
+  @@map("organizations")
+}
+
+model OrganizationUser {
+  id             String      @id @default(uuid())
+  userId         String
+  organizationId String
+  
+  role           UserRole     // optional: role per org
+  isDefault      Boolean      @default(false)
+  joinedAt       DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  // @@id([userId, organizationId]) // Composite PK
+  @@unique([userId, organizationId])
+  @@map("user_organizations")
+}
+
+model Invitation {
+  id              String     @id @default(uuid())
+  email           String
+  role            UserRole
+  organizationId String
+  token           String     @unique
+  expires_at      DateTime
+  created_at      DateTime   @default(now())
+  updated_at      DateTime   @default(now())
+
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([email, organizationId])
+}
+
+// User model
+enum UserRole {
+  ADMIN
+  AGENT
+  CUSTOMER
+}
+
+model User {
+  id             String   @id @default(uuid())
+  name           String
+  email          String   @unique
+  hashedPassword String
+  role           UserRole @default(CUSTOMER)
+  // organizationId String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  organizations       OrganizationUser[]     
+  assignedTickets     Ticket[]              @relation("TicketAssignee")
+  createdTickets      Ticket[]              @relation("TicketCreator")
+  ticketComments      TicketComment[]
+  knowledgeBaseArticles KnowledgeBaseArticle[]
+  onboardingStatus    OnboardingStatus?
+
+  // Refresh tokens
+  refreshTokens       RefreshToken[]
+
+  @@map("users")
+}
+
+// Refresh Token model
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
+
+// Ticket model
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+model Ticket {
+  id             String         @id @default(uuid())
+  title          String
+  description    String
+  status         TicketStatus   @default(OPEN)
+  priority       TicketPriority @default(MEDIUM)
+  assignedUserId String?
+  organizationId String
+  createdBy      String
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  // Relations
+  assignedUser User?         @relation("TicketAssignee", fields: [assignedUserId], references: [id])
+  creator      User          @relation("TicketCreator", fields: [createdBy], references: [id])
+  organization Organization  @relation(fields: [organizationId], references: [id])
+  comments     TicketComment[]
+
+  @@map("tickets")
+}
+
+// Ticket Comment model
+model TicketComment {
+  id        String   @id @default(uuid())
+  content   String
+  ticketId  String
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@map("ticket_comments")
+}
+
+// Knowledge Base Category model
+model KnowledgeBaseCategory {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  articles    KnowledgeBaseArticle[]
+
+  @@map("knowledge_base_categories")
+}
+
+// Knowledge Base Article model
+model KnowledgeBaseArticle {
+  id         String   @id @default(uuid())
+  title      String
+  content    String
+  categoryId String
+  authorId   String
+  published  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  category   KnowledgeBaseCategory @relation(fields: [categoryId], references: [id])
+  author     User                  @relation(fields: [authorId], references: [id])
+
+  @@map("knowledge_base_articles")
+}
+
+// Onboarding Status model
+model OnboardingStatus {
+  id             String   @id @default(uuid())
+  userId         String   @unique
+  isCompleted    Boolean  @default(false)
+  currentStep    Int      @default(0)
+  completedSteps Int[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  user           User     @relation(fields: [userId], references: [id])
+
+  @@map("onboarding_status")
+}
