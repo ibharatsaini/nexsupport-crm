@@ -13,7 +13,10 @@ import Register from '../pages/auth/Register';
 import AcceptInvitation from '../pages/auth/AcceptInvitation';
 
 // Dashboard pages
-import Dashboard from '../pages/dashboard/Dashboard';
+import Dashboard from '../pages/dashboard/Daashboard';
+import Onboarding from '../pages/onboarding/Onboarding';
+import { checkNeedsOnboarding } from '../api/auth';
+import HomePage from '../pages/homepage/HomePage';
 
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -39,7 +42,7 @@ const AppRoutes = () => {
   
   return (
     <Routes>
-      <Route path='/' element={ <HomePage/> } />
+      <Route path='/' element={ <HomePage /> } />
       {/* Auth routes */}
 
       <Route element={<AuthLayout />}>
