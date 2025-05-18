@@ -15,6 +15,12 @@ import AcceptInvitation from '../pages/auth/AcceptInvitation';
 // Dashboard pages
 import Dashboard from '../pages/dashboard/Daashboard';
 import Onboarding from '../pages/onboarding/Onboarding';
+import TicketsList from '../pages/tickets/TicketsList';
+import TicketDetails from '../pages/tickets/TicketDetails';
+import CreateTicket from '../pages/tickets/CreateTicket';
+import OrganizationsList from '../pages/organizations/OrganizationsList';
+import OrganizationDetails from '../pages/organizations/OrganizationDetails';
+import UsersList from '../pages/users/UsersList';
 import { checkNeedsOnboarding } from '../api/auth';
 import HomePage from '../pages/homepage/HomePage';
 
@@ -79,6 +85,12 @@ const AppRoutes = () => {
         }
       >
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/tickets" element={<TicketsList />} />
+        <Route path="/tickets/new" element={<CreateTicket />} />
+        <Route path="/tickets/:id" element={<TicketDetails />} />
+        <Route path="/organizations" element={<OrganizationsList />} />
+        <Route path="/organizations/:id" element={<OrganizationDetails />} />
+        <Route path="/users" element={<UsersList />} />
        
       </Route>
       
