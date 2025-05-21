@@ -1,7 +1,7 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
-// import { checkNeedsOnboarding } from '../api/auth';
+import { checkNeedsOnboarding } from '../api/auth';
 
 // Layouts
 import AuthLayout from '../components/layout/AuthLayout';
@@ -14,16 +14,19 @@ import AcceptInvitation from '../pages/auth/AcceptInvitation';
 
 // Dashboard pages
 import Dashboard from '../pages/dashboard/Daashboard';
-import Onboarding from '../pages/onboarding/Onboarding';
 import TicketsList from '../pages/tickets/TicketsList';
 import TicketDetails from '../pages/tickets/TicketDetails';
 import CreateTicket from '../pages/tickets/CreateTicket';
 import OrganizationsList from '../pages/organizations/OrganizationsList';
 import OrganizationDetails from '../pages/organizations/OrganizationDetails';
 import UsersList from '../pages/users/UsersList';
-import { checkNeedsOnboarding } from '../api/auth';
+import KnowledgeBaseHome from '../pages/knowledge-base/KnowledgeBaseHome';
+import ArticleDetails from '../pages/knowledge-base/ArticleDetails';
+import ManageArticles from '../pages/knowledge-base/ManageArticles';
+import ManageCategories from '../pages/knowledge-base/ManageCategories';
+import Settings from '../pages/settings/Settings';
+import Onboarding from '../pages/onboarding/Onboarding';
 import HomePage from '../pages/homepage/HomePage';
-
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, isLoading } = useAuthStore();
@@ -48,7 +51,7 @@ const AppRoutes = () => {
   
   return (
     <Routes>
-      <Route path='/' element={ <HomePage /> } />
+      <Route path='/' element={ <HomePage/> } />
       {/* Auth routes */}
 
       <Route element={<AuthLayout />}>
@@ -91,7 +94,11 @@ const AppRoutes = () => {
         <Route path="/organizations" element={<OrganizationsList />} />
         <Route path="/organizations/:id" element={<OrganizationDetails />} />
         <Route path="/users" element={<UsersList />} />
-       
+        <Route path="/knowledge-base" element={<KnowledgeBaseHome />} />
+        <Route path="/knowledge-base/articles/:id" element={<ArticleDetails />} />
+        <Route path="/knowledge-base/manage/articles" element={<ManageArticles />} />
+        <Route path="/knowledge-base/manage/categories" element={<ManageCategories />} />
+        <Route path="/settings" element={<Settings />} />
       </Route>
       
       {/* Redirect to login by default */}
