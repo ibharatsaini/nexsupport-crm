@@ -1,5 +1,5 @@
 import prisma from '../config/prisma';
-import { sendInvitationEmail } from '../utils/email';
+// import { sendInvitationEmail } from '../utils/email';
 import { hashPassword } from '../utils/auth';
 import { UserRole } from '@prisma/client';
 import { randomUUID } from 'crypto';
@@ -90,10 +90,10 @@ export const invitationService = {
       },
     });
 
-    await sendInvitationEmail({
-      email: invitation.email,
-      token: invitation.token,
-      organizationId: invitation.organizationId,
-    });
+    // await sendInvitationEmail({
+    //   email: invitation.email,
+    //   token: invitation.token,
+    //   organizationId: invitation.organizationId,
+    // });
   },
 };
